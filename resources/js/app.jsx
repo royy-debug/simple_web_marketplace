@@ -4,9 +4,9 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import '../css/app.css';
-import AdminLayout from "./components/layouts/AdminLayout";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+import AdminLayout from "./pages/components/layouts/AdminLayout";
+import Login from "./pages/auth/Login"
+import Register from "./pages/auth/Register";
 import Dashboard from "./pages/admin/Dashboard";
 import Products from "./pages/admin/Products";
 import Users from "./pages/admin/Users";

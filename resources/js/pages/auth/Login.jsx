@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import api from "../api/api"
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
@@ -15,13 +16,15 @@ export default function Login() {
         setLoading(true);
 
         try {
-            const res = await window.axios.post("/api/login", {
-                email,
-                password,
-            });
+           const res = await api.post("/login", {
             
+    email,
+    password,
+});console.log("login response:", res.data);
+
             // Simpan token
-            localStorage.setItem("token", res.data.access_token);
+            localStorage.setItem("token", res.data.access_token);console.log("saved token:", localStorage.getItem("token"));
+
             
             // Redirect ke admin
             navigate("/admin");

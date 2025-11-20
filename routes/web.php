@@ -2,21 +2,15 @@
 
 use Illuminate\Support\Facades\Route;
 
-// Landing Page
-Route::get('/', function () {
-    return view('landing');
-});
+// Landing (non-react)
+Route::view('/', 'landing');
 
-// Login & Register pages
-Route::get('/login', function () {
-    return view('app');
-});
+// React handles everything else except API
+Route::view('/login', 'app');
+Route::view('/register', 'app');
 
-Route::get('/register', function () {
-    return view('app');
-});
+// Admin SPA
+Route::view('/admin/{any?}', 'app')->where('any', '.*');
 
-// Admin pages
-Route::get('/admin/{any?}', function () {
-    return view('app');
-})->where('any', '.*');
+// User SPA
+Route::view('/{any}', 'app')->where('any', '^(?!api).*$');
