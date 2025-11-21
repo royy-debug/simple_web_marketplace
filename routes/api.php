@@ -3,6 +3,7 @@
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 
@@ -24,9 +25,10 @@ Route::get('/products/{product}', [ProductController::class, 'show']);
 Route::middleware(['auth:api', 'admin'])->group(function () {
     Route::apiResource('products', ProductController::class)
         ->except(['index', 'show']); // karena sudah ada public index & show
+         Route::get('/categories', [CategoryController::class, 'index']);
 
     // Users list (admin only)
-        Route::get('/users', [UserController::class, 'index']); // list semua user
+Route::apiResource('users', UserController::class); // CRUD lengkap
 });
 
 // ================= ORDER ROUTES =================

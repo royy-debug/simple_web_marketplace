@@ -1,11 +1,33 @@
-// src/api.js
+// src/api/api.js
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://127.0.0.1:8000/api", // pastikan sama dengan origin Laravel
-    headers: {
-        "Content-Type": "application/json",
-    },
+  baseURL: "http://127.0.0.1:8000/api",
 });
+
+// Interceptor untuk auto-attach token
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Interceptor untuk handle 401 error
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token invalid/expired, redirect ke login
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default api;
