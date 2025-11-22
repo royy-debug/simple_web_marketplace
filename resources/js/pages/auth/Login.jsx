@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import api from "../api/api"
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -9,6 +10,7 @@ export default function Login() {
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -16,23 +18,41 @@ export default function Login() {
         setLoading(true);
 
         try {
-           const res = await api.post("/login", {
-            
-    email,
-    password,
-});console.log("login response:", res.data);
+            const res = await api.post("/login", {
+                email,
+                password,
+            });
+
+            console.log("login response:", res.data);
 
             // Simpan token
-            localStorage.setItem("token", res.data.access_token);console.log("saved token:", localStorage.getItem("token"));
+            localStorage.setItem("token", res.data.access_token);
 
-            
-            // Redirect ke admin
-            navigate("/admin");
+            // Ambil role user
+            const userRole = res.data.user?.role || "user";
+
+            // Simpan user ke AuthContext
+            login({
+                id: res.data.user.id,
+                name: res.data.user.name,
+                role: userRole,
+                token: res.data.access_token,
+            });
+
+            // Redirect sesuai role
+            if (userRole === "admin") {
+                navigate("/admin");
+            } else {
+                // Gunakan setTimeout untuk memastikan state tersimpan dulu
+                setTimeout(() => {
+                    window.location.href = "/";
+                }, 100);
+            }
+
         } catch (error) {
+            console.log("Login error:", error.response?.data);
             setError(error.response?.data?.message || "Login gagal!");
-            console.error(error.response?.data);
-        } finally {
-            setLoading(false);
+            setLoading(false);  // Reset loading hanya di catch
         }
     };
 

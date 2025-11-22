@@ -2,15 +2,16 @@
 
 use Illuminate\Support\Facades\Route;
 
-// Landing (non-react)
+// ===== Landing Pages (pakai landing.blade.php) =====
 Route::view('/', 'landing');
+Route::view('/products', 'landing');
+Route::view('/order/{id}', 'landing')->where('id', '[0-9]+');
+Route::view('/orders', 'landing');  // <-- TAMBAH INI
 
-// React handles everything else except API
+
+// ===== Auth Pages (pakai app.blade.php) =====
 Route::view('/login', 'app');
 Route::view('/register', 'app');
 
-// Admin SPA
+// ===== Admin SPA (pakai app.blade.php) =====
 Route::view('/admin/{any?}', 'app')->where('any', '.*');
-
-// User SPA
-Route::view('/{any}', 'app')->where('any', '^(?!api).*$');

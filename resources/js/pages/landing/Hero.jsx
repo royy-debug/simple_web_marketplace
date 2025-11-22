@@ -10,14 +10,7 @@ export default function Hero() {
                     Platform modern untuk menampilkan produk terbaik Anda.
                 </p>
 
-                <div className="flex gap-4 justify-center">
-                    <a href="/login" className="px-6 py-3 bg-blue-600 text-white rounded-lg">
-                        Login
-                    </a>
-                    <a href="/register" className="px-6 py-3 bg-gray-200 text-black rounded-lg">
-                        Register
-                    </a>
-                </div>
+               
             </div>
         </section>
     );

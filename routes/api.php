@@ -7,34 +7,57 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\OrderController;
 
-// ================= AUTH ROUTES =================
+/*
+|--------------------------------------------------------------------------
+| AUTH ROUTES (Public)
+|--------------------------------------------------------------------------
+*/
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// Protected auth routes
+/*
+|--------------------------------------------------------------------------
+| USER AUTH ROUTES
+|--------------------------------------------------------------------------
+*/
 Route::middleware('auth:api')->group(function () {
+
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    // USER ORDERS
+    Route::get('/my-orders', [OrderController::class, 'myOrders']);
+    Route::post('/orders', [OrderController::class, 'store']);
+
+    // User detail (hindari bentrok dengan admin)
+    Route::get('/orders/detail/{order}', [OrderController::class, 'show']);
+
+    Route::post('/orders/{order}/upload-payment', [OrderController::class, 'uploadPayment']);
+    Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel']);
 });
 
-// ================= PRODUCT ROUTES =================
-// Public product routes
+/*
+|--------------------------------------------------------------------------
+| PUBLIC PRODUCTS
+|--------------------------------------------------------------------------
+*/
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{product}', [ProductController::class, 'show']);
 
-// Admin-only product routes (CRUD)
+/*
+|--------------------------------------------------------------------------
+| ADMIN ROUTES
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth:api', 'admin'])->group(function () {
-    Route::apiResource('products', ProductController::class)
-        ->except(['index', 'show']); // karena sudah ada public index & show
-         Route::get('/categories', [CategoryController::class, 'index']);
 
-    // Users list (admin only)
-Route::apiResource('users', UserController::class); // CRUD lengkap
-});
+    Route::apiResource('products', ProductController::class)->except(['index', 'show']);
+    Route::apiResource('users', UserController::class);
 
-// ================= ORDER ROUTES =================
-// Protected order routes
-Route::middleware('auth:api')->group(function () {
-    Route::apiResource('orders', OrderController::class);
+    Route::get('/categories', [CategoryController::class, 'index']);
 
-    Route::post('/orders/{order}/upload-payment', [OrderController::class, 'uploadPayment']);
+    // ADMIN ORDERS
+    Route::get('/orders', [OrderController::class, 'index']);
+    Route::get('/orders/{order}', [OrderController::class, 'adminShow']);
+    Route::put('/orders/{order}', [OrderController::class, 'update']);
+    Route::delete('/orders/{order}', [OrderController::class, 'destroy']);
 });
