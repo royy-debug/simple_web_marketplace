@@ -3,6 +3,33 @@ import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 
 /* -------------------------------------------------------
+   HELPER: Get Full Image URL
+--------------------------------------------------------*/
+const getImageUrl = (imagePath) => {
+    if (!imagePath) return null;
+    
+    // Jika sudah URL lengkap (http/https), langsung return
+    if (imagePath.startsWith("http")) return imagePath;
+    
+    // Base URL backend Laravel (sesuaikan dengan env Anda)
+    const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+    
+    // Jika path sudah include /storage, jangan tambah lagi
+    if (imagePath.startsWith("/storage")) {
+        return `${API_BASE}${imagePath}`;
+    }
+    
+    // Tambahkan /storage/ untuk file dari Laravel storage
+    const cleanPath = imagePath.startsWith("/") ? imagePath : `/${imagePath}`;
+    return `${API_BASE}/storage${cleanPath}`;
+};
+
+/* -------------------------------------------------------
+   FALLBACK IMAGE (placeholder online)
+--------------------------------------------------------*/
+const FALLBACK_IMAGE = "https://via.placeholder.com/400x300?text=No+Image";
+
+/* -------------------------------------------------------
    PRODUCT CARD (Memoized)
 --------------------------------------------------------*/
 const ProductCard = memo(function ProductCard({ product, onOrder }) {
@@ -12,12 +39,15 @@ const ProductCard = memo(function ProductCard({ product, onOrder }) {
             onClick={() => onOrder(product)}
         >
             <img
-                src={product.image}
+                src={getImageUrl(product.image) || FALLBACK_IMAGE}
                 alt={product.name}
                 className="w-full h-48 object-cover rounded-md mb-4"
                 loading="lazy"
                 decoding="async"
-                onError={(e) => (e.target.src = "/fallback.png")}
+                onError={(e) => {
+                    e.target.onerror = null; // Hindari infinite loop
+                    e.target.src = FALLBACK_IMAGE;
+                }}
             />
 
             <h3 className="text-xl font-semibold mb-2 hover:text-indigo-600 transition">
@@ -70,13 +100,24 @@ export default function Products({ products: propProducts, isPreview = false }) 
        FETCH PRODUCTS (Only if no props)
     -------------------------------------*/
     useEffect(() => {
+        // Jika props ada & ada isi → pakai props
         if (propProducts && propProducts.length > 0) {
             setProducts(propProducts);
             setLoading(false);
             return;
         }
 
-        if (!propProducts) {
+        // Jika props undefined → halaman Products → fetch API
+        if (propProducts === undefined) {
+            api.get("/products")
+                .then((res) => setProducts(res.data))
+                .catch((err) => console.error("Error fetching products:", err))
+                .finally(() => setLoading(false));
+            return;
+        }
+
+        // Jika props ada tapi kosong → fetch API juga
+        if (propProducts.length === 0) {
             api.get("/products")
                 .then((res) => setProducts(res.data))
                 .catch((err) => console.error("Error fetching products:", err))
@@ -120,8 +161,8 @@ export default function Products({ products: propProducts, isPreview = false }) 
     -------------------------------------*/
     if (isPreview) {
         return (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                {products.map((product) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                {products.slice(0, 4).map((product) => (
                     <ProductCard
                         key={product.id}
                         product={product}

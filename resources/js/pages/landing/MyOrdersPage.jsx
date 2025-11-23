@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api/api";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function MyOrdersPage() {
@@ -204,21 +204,37 @@ function OrderCard({ order, getStatusBadge, getStatusIcon }) {
 }
 
 /** TIMELINE BARU TANPA SHIPPED */
+/** TIMELINE BARU TANPA SHIPPED */
 function OrderTimeline({ status }) {
     const steps = ["pending", "paid", "completed"];
+    const labels = {
+        pending: "Pending",
+        paid: "Dibayar",
+        completed: "Selesai"
+    };
 
     return (
         <div className="bg-gray-50 px-6 py-4">
             <div className="flex items-center justify-between text-xs">
                 {steps.map((s, i) => (
-                    <>
-                        <StatusStep key={s} status={s} currentStatus={status} label={s === "pending" ? "Pending" : s === "paid" ? "Dibayar" : "Selesai"} />
+                    <React.Fragment key={s}>
+                        <StatusStep 
+                            status={s} 
+                            currentStatus={status} 
+                            label={labels[s]} 
+                        />
                         {i < steps.length - 1 && (
                             <div className="flex-1 h-1 bg-gray-200 mx-2">
-                                <div className={`h-full ${steps.indexOf(status) > i ? "bg-indigo-600" : "bg-gray-200"}`} />
+                                <div 
+                                    className={`h-full ${
+                                        steps.indexOf(status) > i 
+                                            ? "bg-indigo-600" 
+                                            : "bg-gray-200"
+                                    }`} 
+                                />
                             </div>
                         )}
-                    </>
+                    </React.Fragment>
                 ))}
             </div>
         </div>
