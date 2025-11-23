@@ -105,24 +105,7 @@ export default function MyOrdersPage() {
     return (
         <div className="min-h-screen bg-gray-50">
             {/* NAVBAR */}
-            <nav className="bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between h-16 items-center">
-                        <Link to="/" className="text-2xl font-bold text-indigo-600">
-                            MyStore
-                        </Link>
-                        <div className="flex items-center gap-6">
-                            <Link to="/products" className="text-gray-700 hover:text-indigo-600 transition font-medium">
-                                Products
-                            </Link>
-                            <Link to="/orders" className="text-indigo-600 font-medium">
-                                My Orders
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
+           
             {/* CONTENT */}
             <div className="max-w-4xl mx-auto px-4 py-8">
                 <h1 className="text-3xl font-bold text-gray-800 mb-8">Pesanan Saya</h1>

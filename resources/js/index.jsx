@@ -9,11 +9,13 @@ import LandingPage from "./pages/landing/LandingPage";
 import ProductPage from "./pages/landing/ProductsPage";
 import OrderPage from "./pages/landing/OrderPage";
 import MyOrdersPage from "./pages/landing/MyOrdersPage";  // <-- TAMBAH INI
+import Navbar from "./components/Navbar"
 
 
 function LandingApp() {
     return (
         <BrowserRouter>
+         <Navbar />
             <Routes>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/products" element={<ProductPage />} />
